@@ -8,7 +8,8 @@ public enum EEnemyType : byte
     PiranhaPlant,
     Goomba,
     FirePiranha,
-    Boo
+    Boo, 
+    Thwomp
 
         //TODO: Add additional EnemyType enumerators here
 }

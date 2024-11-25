@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-//TODO clean up code
-
 public enum eBooState : byte 
 {
     Unknown,
     Chase,
     Idel,
-    MAX = Idel
+    MAX
 
 }
 public class Boo : Enemy
@@ -61,6 +59,18 @@ public class Boo : Enemy
 
         if (m_state == eBooState.Chase)
         {
+            if (transform.position.x > marioLocation.x)
+            {
+                Vector3 scale = transform.localScale;
+                scale.x = 1.0f;
+                transform.localScale = scale;
+            }
+            else
+            {
+                Vector3 scale = transform.localScale;
+                scale.x = -1.0f;
+                transform.localScale = scale;
+            }
             Vector2 location = transform.position;
             location += m_movementDirection * velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
             m_movementDirection = marioLocation - location;
@@ -86,7 +96,7 @@ public class Boo : Enemy
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        // Is the Goomba colliding with the Mario GameObject?
         if (collision.gameObject.CompareTag("Mario"))
         {
             // Get the Mario component from the GameObject
@@ -97,9 +107,14 @@ public class Boo : Enemy
             {
                 // Get the normal from the first contact object
                 Vector2 normal = collision.contacts[0].normal;
-                mario.HandleDamage();
+
+                // Ensure the Goomba's state is walking
+                //if (m_state == eBooState.Chase)
+                {
                    
-                
+                    mario.HandleDamage();
+                   
+                }
             }
         }
     }
