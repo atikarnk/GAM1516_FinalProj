@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum eBooState : byte 
 {
@@ -19,7 +20,7 @@ public class Boo : Enemy
     public Sprite m_idelSprite;
 
     private Vector2 velocity = Vector2.zero;
-
+    private Vector2 m_movementDirection = Vector2.zero;
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -37,13 +38,31 @@ public class Boo : Enemy
     private void FixedUpdate()
     {
         Vector2 marioLocation = Game.Instance.MarioGameObject.transform.position;
+        EMarioDirection direction = Game.Instance.MarioGameObject.GetComponent<MarioState>().Direction;
 
-        
+        if (direction == EMarioDirection.Right && marioLocation.x > transform.position.x)
+        {
+            SetState(eBooState.Chase);
+        }
+        if (direction == EMarioDirection.Right && marioLocation.x <= transform.position.x)
+        {
+            SetState(eBooState.Idel);
+        }
+        if (direction == EMarioDirection.Left && marioLocation.x >= transform.position.x)
+        {
+            SetState(eBooState.Idel);
+        }
+        if (direction == EMarioDirection.Left && marioLocation.x < transform.position.x)
+        {
+            SetState(eBooState.Chase);
+        }
 
         if (m_state == eBooState.Chase)
         {
             Vector2 location = transform.position;
-            location += velocity * Time.deltaTime * Game.Instance.LocalTimeScale+ marioLocation;
+            location += m_movementDirection * velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
+            m_movementDirection = marioLocation - location;
+            m_movementDirection.Normalize();
             transform.position = location;
         }
     }
@@ -63,6 +82,29 @@ public class Boo : Enemy
     {
         get { return m_state; }
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Is the Goomba colliding with the Mario GameObject?
+        if (collision.gameObject.CompareTag("Mario"))
+        {
+            // Get the Mario component from the GameObject
+            Mario mario = collision.gameObject.GetComponent<Mario>();
 
-    
+            // Check if there's a contact object, in the contacts array
+            if (collision.contacts.Length > 0)
+            {
+                // Get the normal from the first contact object
+                Vector2 normal = collision.contacts[0].normal;
+
+                // Ensure the Goomba's state is walking
+                //if (m_state == eBooState.Chase)
+                {
+                   
+                    mario.HandleDamage();
+                   
+                }
+            }
+        }
+    }
+
 }
