@@ -86,7 +86,7 @@ public class Boo : Enemy
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Is the Goomba colliding with the Mario GameObject?
+        
         if (collision.gameObject.CompareTag("Mario"))
         {
             // Get the Mario component from the GameObject
@@ -97,14 +97,9 @@ public class Boo : Enemy
             {
                 // Get the normal from the first contact object
                 Vector2 normal = collision.contacts[0].normal;
-
-                // Ensure the Goomba's state is walking
-                //if (m_state == eBooState.Chase)
-                {
+                mario.HandleDamage();
                    
-                    mario.HandleDamage();
-                   
-                }
+                
             }
         }
     }
