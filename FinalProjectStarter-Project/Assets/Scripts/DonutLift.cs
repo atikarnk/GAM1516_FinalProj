@@ -24,7 +24,6 @@ public class DonutLift : MonoBehaviour
     public Vector3 m_OGPosition;
     private float m_SteppedMaxTime = 0.0f; 
     private Vector2 velocity = Vector2.zero;
-    // Start is called before the first frame update
     void Start()
     {
         m_OGPosition = transform.position;
@@ -107,7 +106,6 @@ public class DonutLift : MonoBehaviour
                 SetState(eDonutLiftState.SteppedOn);
             }
         }
-        //SetState(eDonutLiftState.Idel);
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
