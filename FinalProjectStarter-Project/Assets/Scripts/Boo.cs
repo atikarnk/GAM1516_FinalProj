@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+//TODO clean up code
+
 public enum eBooState : byte 
 {
     Unknown,
     Chase,
     Idel,
-    MAX
+    MAX = Idel
 
 }
 public class Boo : Enemy

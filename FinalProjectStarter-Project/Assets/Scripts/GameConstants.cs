@@ -14,6 +14,10 @@ public static class GameConstants
     public static readonly Vector2[] BreakableBlockBitOffsets = { new Vector2(-0.25f, 0.25f), new Vector2(-0.25f, -0.25f), new Vector2(0.25f, 0.25f), new Vector2(0.25f, -0.25f) };
     public static readonly Vector2[] BreakableBlockBitImpulses = { new Vector2(-4.6875f, 10.9375f), new Vector2(-4.6875f, 9.375f), new Vector2(4.6875f, 10.9375f), new Vector2(4.6875f, 9.375f) };
 
+    //Donut Lift const
+    public const float DonutLiftSteppedMaxTime = 1.0f;
+    public const float DonutLiftFallingSpeed = 15.0f;
+
     // Camera constants
     public const float MaxCameraDelta = 32.0f;
 }
