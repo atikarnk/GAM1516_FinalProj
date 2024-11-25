@@ -59,6 +59,18 @@ public class Boo : Enemy
 
         if (m_state == eBooState.Chase)
         {
+            if (transform.position.x > marioLocation.x)
+            {
+                Vector3 scale = transform.localScale;
+                scale.x = 1.0f;
+                transform.localScale = scale;
+            }
+            else
+            {
+                Vector3 scale = transform.localScale;
+                scale.x = -1.0f;
+                transform.localScale = scale;
+            }
             Vector2 location = transform.position;
             location += m_movementDirection * velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
             m_movementDirection = marioLocation - location;

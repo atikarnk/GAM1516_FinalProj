@@ -33,5 +33,7 @@ public static class EnemyConstants
     public const float BooSpeedy= 3.0f;
 
     // Thwomp const
-    public const float ThwompAnimationDuration = 0.75f;
+    public const float ThwompAnimationDuration = 3.0f;
+    public const float ThwompHoldTimer = 1.0f;
+    public const float ThwompFallingSpeed = 15.0f;
 }
