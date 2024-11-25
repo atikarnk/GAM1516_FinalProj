@@ -27,4 +27,8 @@ public static class EnemyConstants
     public const float FirePlantFireDelayDuration = 1.5f;
     public const float FirePlantHeadOffsetY = 1.5f;
     public const float FirePlantFireballSpeed = 2.35f;
+
+    //Boo const
+    public const float BooSpeedx = 3.0f;
+    public const float BooSpeedy= 3.0f;
 }
