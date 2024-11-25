@@ -29,6 +29,7 @@ public class Game : MonoBehaviour
     public GameObject breakableBlockBitPrefab;
     public GameObject fireballPrefab;
     public GameObject changeAnimationPrefab;
+    public GameObject oneUpPickupPrefab;
 
 
     private GameObject deadMario = null;
@@ -280,6 +281,16 @@ public class Game : MonoBehaviour
             GameObject mushroomObject = Instantiate(mushroomPickupPrefab, new Vector3(location.x, location.y, 1.0f), Quaternion.identity);
             MushroomPickup mushroomPickup = mushroomObject.GetComponent<MushroomPickup>();
             mushroomPickup.Spawn();
+        }
+    }
+
+    public void SpawnOneUpPickup(Vector2 location)
+    {
+        if (oneUpPickupPrefab != null)
+        {
+            GameObject oneUpObject = Instantiate(oneUpPickupPrefab, new Vector3(location.x, location.y, 1.0f), Quaternion.identity);
+            OneUpPickup oneUpPickup = oneUpObject.GetComponent<OneUpPickup>();
+            oneUpPickup.Spawn();
         }
     }
 
