@@ -30,7 +30,7 @@ public class Boo : Enemy
 
         // Set the enemy type
         enemyType = EEnemyType.Boo;
-        velocity = new Vector2(EnemyConstants.BooSpeedx, EnemyConstants.BooSpeedy);
+        velocity = new Vector2(EnemyConstants.c_booSpeedx, EnemyConstants.c_booSpeedy);
         SetState(eBooState.Idel);
     }
 
