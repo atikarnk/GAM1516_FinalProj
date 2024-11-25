@@ -264,8 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc00876907b29d438d0f21a7d78c7d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontTrigger: {fileID: 4277308299106366899}
-  backTrigger: {fileID: 4677326673180635282}
+  frontTrigger: {fileID: 4677326673180635282}
+  backTrigger: {fileID: 4277308299106366899}
 --- !u!61 &7669178994906507478
 BoxCollider2D:
   m_ObjectHideFlags: 0
