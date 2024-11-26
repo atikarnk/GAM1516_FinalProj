@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.FilePathAttribute;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public enum EThwompState : byte
 {
     Unknown,
     Idle,
+    AnimDown,
     Active,
     AnimUp
 }
@@ -43,33 +45,41 @@ public class Thwomp : Enemy
             Vector2 marioLocation = Game.Instance.MarioGameObject.transform.position;
             if (marioLocation.x - idleLocation.x <= 1.5f && marioLocation.x - idleLocation.x >= -1.5f)
             {
-                SetState(EThwompState.Active);
+                SetState(EThwompState.AnimDown);
             }
         }
-        else if (state == EThwompState.Active)
+        else if (state == EThwompState.AnimDown)
         {
             activeLocation = transform.position;
             activeLocation += velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
             transform.position = activeLocation;
         }
-        else if (state == EThwompState.AnimUp)
+        else if (state == EThwompState.Active)
         {
+            MarioCamera camera = Game.Instance.marioCamera;
+            camera.CheckShaking = true;
+
             holdTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
             if (holdTimer <= 0.0f)
             {
-                animationTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
+                camera.CheckShaking = false;
+                holdTimer = 0.0f;
+                SetState(EThwompState.AnimUp);
+            }
+        }
+        else if (state == EThwompState.AnimUp)
+        {
+            animationTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
 
-                float pct = 1.0f - (animationTimer / EnemyConstants.ThwompAnimationDuration);
-                float locationX = Mathf.Lerp(activeLocation.x, idleLocation.x, pct);
-                float locationY = Mathf.Lerp(activeLocation.y, idleLocation.y, pct);
-                transform.position = new Vector2(locationX, locationY);
+            float pct = 1.0f - (animationTimer / EnemyConstants.ThwompAnimationDuration);
+            float locationX = Mathf.Lerp(activeLocation.x, idleLocation.x, pct);
+            float locationY = Mathf.Lerp(activeLocation.y, idleLocation.y, pct);
+            transform.position = new Vector2(locationX, locationY);
 
-                if (animationTimer <= 0.0f)
-                {
-                    holdTimer = 0.0f;
-                    animationTimer = 0.0f;
-                    SetState(EThwompState.Idle);
-                }
+            if (animationTimer <= 0.0f)
+            {
+                animationTimer = 0.0f;
+                SetState(EThwompState.Idle);
             }
         }
     }
@@ -84,12 +94,16 @@ public class Thwomp : Enemy
             {
                 transform.position = idleLocation;
             }
+            else if (state == EThwompState.AnimDown)
+            {
+
+            }
             else if (state == EThwompState.Active)
             {
+                holdTimer = EnemyConstants.ThwompHoldTimer;
             }
             else if (state == EThwompState.AnimUp)
             {
-                holdTimer = EnemyConstants.ThwompHoldTimer;
                 activeLocation = transform.position;
                 animationTimer = EnemyConstants.ThwompAnimationDuration;
 
@@ -100,13 +114,13 @@ public class Thwomp : Enemy
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (state == EThwompState.Active)
+        if (state == EThwompState.AnimDown)
         {
             if (collision.gameObject.CompareTag("World"))
             {
                 if (collision.contacts.Length > 0)
                 {
-                    SetState(EThwompState.AnimUp);
+                    SetState(EThwompState.Active);
                 }
             }
         }

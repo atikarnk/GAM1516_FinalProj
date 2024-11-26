@@ -361,6 +361,10 @@ public class Mario : MonoBehaviour
             {
                 marioState.Coins++;
             }
+            else if (pickupType == EPickupType.OneUp)
+            {
+                marioState.Lives++;
+            }
 
             // Destroy the pickup gameObject
             Destroy(collider.gameObject);
