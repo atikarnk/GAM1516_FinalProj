@@ -6,6 +6,10 @@ public class MarioCamera : MonoBehaviour
 {
     public BoxCollider2D levelBoundsCollider;
 
+    // for shaking
+    private bool isShaking;
+    private float shakeTimer;
+
     public Vector2 ViewSize
     {
         get
@@ -16,10 +20,16 @@ public class MarioCamera : MonoBehaviour
         }
     }
 
+    public bool CheckShaking
+    {
+        get { return isShaking; }
+        set { isShaking = value; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        shakeTimer = GameConstants.CameraShakeMaxTime;
     }
 
     // Update is called once per frame
@@ -37,6 +47,20 @@ public class MarioCamera : MonoBehaviour
 
             // Set the camera location
             SetCameraLocation(cameraLocation);
+
+            if (isShaking)
+            {
+                if (shakeTimer >= 0.0f)
+                    shakeTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
+                if (shakeTimer < 0.0f)
+                {
+                    isShaking = false;
+                    shakeTimer = GameConstants.CameraShakeMaxTime;
+                }
+
+                if (shakeTimer > 0.0f)
+                    Shake(marioLocation);
+            }
         }
     }
 
@@ -56,5 +80,16 @@ public class MarioCamera : MonoBehaviour
         cameraLocation.z = transform.position.z;
 
         transform.position = cameraLocation;
+    }
+
+    public void Shake(Vector2 location)
+    {
+        if (isShaking)
+        {
+            float x = UnityEngine.Random.Range(-0.5f, 0.5f);
+            float y = UnityEngine.Random.Range(-0.5f, 0.5f);
+
+            SetCameraLocation(new Vector2(location.x + x, location.y));
+        }
     }
 }

@@ -24,8 +24,6 @@ public class Thwomp : Enemy
     private float animationTimer = 0.0f;
     private float holdTimer = 0.0f;
 
-    private bool isOnGround;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +33,6 @@ public class Thwomp : Enemy
         idleLocation = transform.position;
         velocity.y = -EnemyConstants.ThwompFallingSpeed;
         rigidbody.gravityScale = 0.0f;
-        isOnGround = false;
 
         SetState(EThwompState.Idle);
     }
@@ -59,13 +56,16 @@ public class Thwomp : Enemy
         }
         else if (state == EThwompState.Active)
         {
+            MarioCamera camera = Game.Instance.marioCamera;
+            camera.CheckShaking = true;
+
             holdTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
             if (holdTimer <= 0.0f)
             {
+                camera.CheckShaking = false;
                 holdTimer = 0.0f;
                 SetState(EThwompState.AnimUp);
             }
-
         }
         else if (state == EThwompState.AnimUp)
         {
@@ -100,12 +100,10 @@ public class Thwomp : Enemy
             }
             else if (state == EThwompState.Active)
             {
-                isOnGround = true;
                 holdTimer = EnemyConstants.ThwompHoldTimer;
             }
             else if (state == EThwompState.AnimUp)
             {
-                isOnGround = false;
                 activeLocation = transform.position;
                 animationTimer = EnemyConstants.ThwompAnimationDuration;
 
