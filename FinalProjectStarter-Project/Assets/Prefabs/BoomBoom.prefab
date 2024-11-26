@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 276418605814772945}
   - component: {fileID: 8457075737548801604}
   - component: {fileID: 6860800623616918827}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BoomBoom
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -160,7 +160,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 5
 --- !u!61 &276418605814772945
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -193,7 +193,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.5, y: 0.7}
+  m_Offset: {x: 0.5, y: 0.8}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -204,7 +204,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.8, y: 1}
+  m_Size: {x: 0.8, y: 1.2}
   m_EdgeRadius: 0
 --- !u!61 &8457075737548801604
 BoxCollider2D:
@@ -238,7 +238,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.5, y: 0.7}
+  m_Offset: {x: -0.5, y: 0.8}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -249,7 +249,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.8, y: 1}
+  m_Size: {x: 0.8, y: 1.2}
   m_EdgeRadius: 0
 --- !u!114 &6860800623616918827
 MonoBehaviour:
@@ -264,10 +264,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   primaryCollider: {fileID: 6172368219214863823}
-  frontTrigger: {fileID: 6172368219214863823}
-  backTrigger: {fileID: 6172368219214863823}
+  frontTrigger: {fileID: 276418605814772945}
+  backTrigger: {fileID: 8457075737548801604}
   m_dormantSprite: {fileID: 21300000, guid: 908b557ce9f92484bab868cab1ba94ac, type: 3}
   m_walkingSprite: {fileID: 21300000, guid: 9d160c8e5666b9b47b14eb6569ea6a92, type: 3}
   m_stunnedSprite: {fileID: 21300000, guid: 9364a17081027b049b1270eaebc51e9d, type: 3}
+  m_nearDeathStunned: {fileID: 21300000, guid: 6f8f4adbbdc307c469cb35d91f055a6a, type: 3}
   m_deathSprite: {fileID: 21300000, guid: d18e0d6d1f04e8943a01b02b3ea1888b, type: 3}
   m_initialDirection: 0

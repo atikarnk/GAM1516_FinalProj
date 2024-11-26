@@ -38,6 +38,8 @@ public static class EnemyConstants
     public const float c_boomBoomNearDeathSpeed = 6.0f;
     public const float c_boomBoomStunnedDuration = 1.0f;
     public const Int32 c_boomBoomLives = 3;
+    public const Int32 c_boomBoomNearDeathLives = 1;
     public const float c_boomBoomDirectionChangeInterval = 1.0f;
+
 
 }
