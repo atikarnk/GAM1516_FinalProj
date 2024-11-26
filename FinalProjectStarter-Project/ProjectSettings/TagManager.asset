@@ -11,6 +11,7 @@ TagManager:
   - ItemBox
   - BreakableBlock
   - Door
+  - Boundry
   layers:
   - Default
   - TransparentFX
@@ -26,7 +27,7 @@ TagManager:
   - PickupStatic
   - ItemBox
   - Boo
-  - 
+  - Boundry
   - 
   - 
   - 

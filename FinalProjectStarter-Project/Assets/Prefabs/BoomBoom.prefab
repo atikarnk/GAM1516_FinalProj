@@ -267,10 +267,7 @@ MonoBehaviour:
   m_primaryCollider: {fileID: 6172368219214863823}
   m_frontTrigger: {fileID: 8457075737548801604}
   m_backTrigger: {fileID: 276418605814772945}
-  m_dormantSprite: {fileID: 21300000, guid: 908b557ce9f92484bab868cab1ba94ac, type: 3}
-  m_walkingSprite: {fileID: 21300000, guid: 9d160c8e5666b9b47b14eb6569ea6a92, type: 3}
-  m_stunnedSprite: {fileID: 21300000, guid: 9364a17081027b049b1270eaebc51e9d, type: 3}
-  m_deathSprite: {fileID: 21300000, guid: d18e0d6d1f04e8943a01b02b3ea1888b, type: 3}
+  m_dormantSprite: {fileID: 0}
   m_initialDirection: 0
 --- !u!95 &4076497668632288702
 Animator:

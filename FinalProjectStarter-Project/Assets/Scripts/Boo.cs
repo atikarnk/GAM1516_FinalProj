@@ -102,6 +102,19 @@ public class Boo : Enemy
                 
             }
         }
+        if (collision.gameObject.CompareTag("Boundry"))
+        {
+            Debug.Log("collision.gameObject.CompareTag");
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+       
+        Debug.Log("EXIT Boundry");
+        if (collision.gameObject.CompareTag("Boundry"))
+        {
+            Debug.Log("collision.gameObject.CompareTag");
+        }
     }
 
 }
