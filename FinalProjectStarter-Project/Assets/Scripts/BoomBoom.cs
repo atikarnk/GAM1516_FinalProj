@@ -23,7 +23,6 @@ public enum eBoomBoomState : byte
     Dormant,
     Jump,
     NearDeath,
-    NearDeathStunned,
     Death,
     Pause,
     MAX=Pause
@@ -32,6 +31,7 @@ public enum eBoomBoomState : byte
 
 public enum eBoomBoomInitialDirection : byte
 {
+    Unknown,
     Random,
     Left,
     Right,
@@ -40,32 +40,18 @@ public enum eBoomBoomInitialDirection : byte
 
 public class BoomBoom : Enemy
 {
+    public BoxCollider2D m_primaryCollider;
+    public BoxCollider2D m_frontTrigger;
+    public BoxCollider2D m_backTrigger;
 
-    //Walking collision dimentions size: x=1.7 y = 1.6
-    //Walking collision dimentions offset: x=0 y=0.8
-    //Dormant collision dimentions size: Vector2(1.89999998,1.39999998)
-    //Dormant collision dimentions offset:Vector2(0,0.699999988)
-    public BoxCollider2D primaryCollider;
+    protected Animator m_animator;
 
-    //Walking collision dimentions size= Vector2(0.800000012,1.5)
-    //Walking collision dimentions offset= Vector2(-0.5,0.800000012)
-    //Dormant collision dimentions size= Vector2(0.800000012,1.29999995)
-    //Dormant collision dimentions offset=Vector2(-0.600000024,0.699999988)
-    public BoxCollider2D frontTrigger;
+    //public Sprite m_dormantSprite;
+    //public Sprite m_walkingSprite;
+    //public Sprite m_stunnedSprite;
+    //public Sprite m_deathSprite;
 
-    //Walking collision dimentions size= Vector2(0.800000012,1.5)
-    //Walking collision dimentions offset= Vector2(0.5,0.800000012)
-    //Dormant collision dimentions size= Vector2(0.800000012,1.29999995)
-    //Dormant collision dimentions offset= Vector2(0.600000024,0.699999988)
-    public BoxCollider2D backTrigger;
-
-    public Sprite m_dormantSprite;
-    public Sprite m_walkingSprite;
-    public Sprite m_stunnedSprite;
-    public Sprite m_nearDeathStunned;
-    public Sprite m_deathSprite;
-
-    public EGoombaInitialDirection m_initialDirection = EGoombaInitialDirection.Random;
+    public eBoomBoomInitialDirection m_initialDirection = eBoomBoomInitialDirection.Unknown;
     private eBoomBoomState m_state = eBoomBoomState.Unknown;
 
     private float m_stunnedDuration = 0.0f; //using same timer for stunned and dormant
@@ -73,20 +59,22 @@ public class BoomBoom : Enemy
     private float m_directionChangeInterval = 0.0f;
     private Int32 m_lives = 0;
     private Int32 m_nearDeathLives = 0;
-
-    private bool m_allowRandomDirection = true;
+    private Vector3 m_awakenRange = Vector3.zero;
+    private bool m_allowRandomDirection = true; //prevent the random direction from happening if the OnTriggerEnter2D is still clipping an object and not continue that direction.
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
+        m_animator = GetComponent<Animator>();
         setBoxColliderDementions();
         m_velocity.x = EnemyConstants.c_boomBoomSpeed;
         m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-        SetState(eBoomBoomState.Dormant);
         m_lives = EnemyConstants.c_boomBoomLives;
         m_directionChangeInterval= EnemyConstants.c_boomBoomDirectionChangeInterval;
         m_nearDeathLives = EnemyConstants.c_boomBoomNearDeathLives;
+        m_awakenRange = EnemyConstants.c_boomBoomAwakenRange;
+        SetState(eBoomBoomState.Dormant);
     }
 
     // Update is called once per frame
@@ -96,6 +84,34 @@ public class BoomBoom : Enemy
     }
     private void FixedUpdate()
     {
+        
+        if (m_state == eBoomBoomState.Stunned)
+        {
+            m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
+
+            if (m_stunnedDuration <= 0.0f)
+            {
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
+                SetState(eBoomBoomState.Dormant);
+            }
+        }
+        if (m_state == eBoomBoomState.Dormant)
+        {
+            if (checkAwakenRange())
+            {
+                m_awakenRange.x = 100.0f;//setting range to 100 vs creating a new bool
+                m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
+            }
+
+            
+            if (m_stunnedDuration <= 0.0f)
+            {
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
+
+                SetState((m_lives == m_nearDeathLives) ? eBoomBoomState.NearDeath : eBoomBoomState.Walking);
+
+            }
+        }
         if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
         {
             m_directionChangeInterval -= Time.deltaTime * Game.Instance.LocalTimeScale;
@@ -108,29 +124,6 @@ public class BoomBoom : Enemy
             Vector2 location = rigidbody.position;
             location += m_velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
             rigidbody.position = location;
-        }
-        if (m_state == eBoomBoomState.Dormant)
-        {
-
-            m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
-
-            if (m_stunnedDuration <= 0.0f)
-            {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-                
-                SetState((m_lives== m_nearDeathLives) ?eBoomBoomState.NearDeath : eBoomBoomState.Walking);
-
-            }
-        }
-        if (m_state == eBoomBoomState.Stunned|| m_state == eBoomBoomState.NearDeathStunned)
-        {
-            m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
-
-            if (m_stunnedDuration <= 0.0f)
-            {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-                SetState(eBoomBoomState.Dormant);
-            }
         }
         if (m_state == eBoomBoomState.Death)
         {
@@ -147,48 +140,40 @@ public class BoomBoom : Enemy
         if (m_state != state)
         {
             m_state = state;
+            setBoxColliderDementions();
+            UpdateAnimator();
             if (m_state == eBoomBoomState.Walking)
             {
-                // Update the collider's size and offset
-                setBoxColliderDementions();
+                
                 RandomizeDirection();
-                spriteRenderer.sprite = m_walkingSprite;
+                //spriteRenderer.sprite = m_walkingSprite;
             }
-            if (m_state == eBoomBoomState.Stunned)
+            else if (m_state == eBoomBoomState.NearDeath)
             {
-                setBoxColliderDementions();
-                spriteRenderer.sprite = m_stunnedSprite;
-            }
-            if (m_state == eBoomBoomState.Dormant)
-            {
-                // Update the collider's size and offset
-                setBoxColliderDementions();
-                spriteRenderer.sprite = m_dormantSprite;
-            }
-            if (m_state == eBoomBoomState.Jump)
-            {
-                spriteRenderer.sprite = m_walkingSprite;
-            }
-            if (m_state == eBoomBoomState.NearDeath)
-            {
-                // Update the collider's size and offset
-                setBoxColliderDementions();
                 RandomizeDirection();
-                spriteRenderer.sprite = m_walkingSprite;
+                //spriteRenderer.sprite = m_walkingSprite;
             }
-            if (m_state == eBoomBoomState.Death)
+            else if (m_state == eBoomBoomState.Stunned)
             {
-                spriteRenderer.sprite = m_deathSprite;
+                //spriteRenderer.sprite = m_stunnedSprite;
             }
-            if (m_state == eBoomBoomState.Pause)
+            else if (m_state == eBoomBoomState.Dormant)
             {
-                spriteRenderer.sprite = m_walkingSprite;
+                //spriteRenderer.sprite = m_dormantSprite;
             }
-            if (m_state == eBoomBoomState.NearDeathStunned)
+            else if (m_state == eBoomBoomState.Jump)
             {
-                setBoxColliderDementions();
-                spriteRenderer.sprite = m_nearDeathStunned;
+                //spriteRenderer.sprite = m_walkingSprite;
             }
+            else if (m_state == eBoomBoomState.Death)
+            {
+               //spriteRenderer.sprite = m_deathSprite;
+            }
+            else if (m_state == eBoomBoomState.Pause)
+            {
+                //spriteRenderer.sprite = m_walkingSprite;
+            }
+            
         }  
     }
     public eBoomBoomState State
@@ -198,15 +183,15 @@ public class BoomBoom : Enemy
 
     private void ApplyInitialVelocity()
     {
-        if (m_initialDirection == EGoombaInitialDirection.Random)
+        if (m_initialDirection == eBoomBoomInitialDirection.Random)
         {
             RandomizeDirection();
         }
-        else if (m_initialDirection == EGoombaInitialDirection.Right)
+        else if (m_initialDirection == eBoomBoomInitialDirection.Right)
         {
             m_velocity.x = GetCurrentSpeed();
         }
-        else if (m_initialDirection == EGoombaInitialDirection.Left)
+        else if (m_initialDirection == eBoomBoomInitialDirection.Left)
         {
             m_velocity.x = -GetCurrentSpeed();
         }
@@ -243,14 +228,9 @@ public class BoomBoom : Enemy
                 if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
                 {
                    
-                    if (normal.x <= -0.8f || normal.x >= 0.8f)
+                    if (normal.x <= -0.8f || normal.x >= 0.8f || normal.y >= 0.7f)
                     {
                         //collided with Mario on the side
-                        mario.HandleDamage();
-                    }
-                    else if (normal.y >= 0.7f)
-                    {
-                        //landed on Mario
                         mario.HandleDamage();
                     }
                     else if (normal.y <= -0.7f)
@@ -259,15 +239,10 @@ public class BoomBoom : Enemy
 
                         m_lives--;
 
-                        if (m_lives > m_nearDeathLives)
+                        if (m_lives >= m_nearDeathLives)
                         {
 
                             SetState(eBoomBoomState.Stunned);
-                        }
-                        else if (m_lives == m_nearDeathLives)
-                        {
-
-                            SetState(eBoomBoomState.NearDeathStunned);
                         }
                         else
                         {
@@ -287,11 +262,11 @@ public class BoomBoom : Enemy
             List<Collider2D> results = new List<Collider2D>();
             other.OverlapCollider(filter, results);
 
-            if (results.Contains(frontTrigger))
+            if (results.Contains(m_frontTrigger))
             {
                 m_velocity.x = GetCurrentSpeed();
             }
-            else if (results.Contains(backTrigger))
+            else if (results.Contains(m_backTrigger))
             {
                 m_velocity.x = -GetCurrentSpeed();
             }
@@ -317,13 +292,13 @@ public class BoomBoom : Enemy
         //Dormant collision dimentions offset:Vector2(0,0.7)
         if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
         {
-            primaryCollider.size = new Vector2(1.7f, 1.6f);
-            primaryCollider.offset = new Vector2(0, 0.8f);
+            m_primaryCollider.size = new Vector2(1.7f, 1.6f);
+            m_primaryCollider.offset = new Vector2(0, 0.8f);
         }
         else 
         {
-            primaryCollider.size = new Vector2(1.9f, 1.4f);
-            primaryCollider.offset = new Vector2(0, 0.7f);
+            m_primaryCollider.size = new Vector2(1.9f, 1.4f);
+            m_primaryCollider.offset = new Vector2(0, 0.7f);
         }
 
         //frontTrigger
@@ -333,13 +308,13 @@ public class BoomBoom : Enemy
         //Dormant collision dimentions offset=Vector2(-0.6,0.7)
         if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
         {
-            frontTrigger.size = new Vector2(0.8f, 1.2f);
-            frontTrigger.offset = new Vector2(-0.5f, 0.8f);
+            m_frontTrigger.size = new Vector2(0.8f, 1.2f);
+            m_frontTrigger.offset = new Vector2(-0.5f, 0.8f);
         }
         else
         {
-            frontTrigger.size = new Vector2(0.8f, 1.1f);
-            frontTrigger.offset = new Vector2(-0.6f, 0.7f);
+            m_frontTrigger.size = new Vector2(0.8f, 1.1f);
+            m_frontTrigger.offset = new Vector2(-0.6f, 0.7f);
         }
 
         //backTrigger
@@ -349,13 +324,37 @@ public class BoomBoom : Enemy
         //Dormant collision dimentions offset= Vector2(0.6,0.7)
         if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
         {
-            backTrigger.size = new Vector2(0.8f, 1.2f);
-            backTrigger.offset = new Vector2(0.5f, 0.8f);
+            m_backTrigger.size = new Vector2(0.8f, 1.2f);
+            m_backTrigger.offset = new Vector2(0.5f, 0.8f);
         }
         else
         {
-            backTrigger.size = new Vector2(0.8f, 1.1f);
-            backTrigger.offset = new Vector2(0.6f, 0.7f);
+            m_backTrigger.size = new Vector2(0.8f, 1.1f);
+            m_backTrigger.offset = new Vector2(0.6f, 0.7f);
+        }
+    }
+    bool checkAwakenRange()
+    {
+        return m_awakenRange.x >= Vector3.Distance(Game.Instance.MarioGameObject.transform.position, transform.position); 
+    }
+    private void UpdateAnimator()
+    {
+        
+        if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
+        {
+            animator.Play("BoomBoomWalk");
+        }
+        else if (m_state == eBoomBoomState.Dormant)
+        {
+            //spriteRenderer.sprite = m_dormantSprite;
+        }
+        else if (m_state == eBoomBoomState.Stunned)
+        {
+            animator.Play("BoomBoomStunned");
+        }
+        else if (m_state == eBoomBoomState.Death)
+        {
+            animator.Play("BoomBoomDeath");
         }
     }
 }

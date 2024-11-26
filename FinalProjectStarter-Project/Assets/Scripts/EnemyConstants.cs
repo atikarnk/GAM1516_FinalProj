@@ -40,6 +40,7 @@ public static class EnemyConstants
     public const Int32 c_boomBoomLives = 3;
     public const Int32 c_boomBoomNearDeathLives = 1;
     public const float c_boomBoomDirectionChangeInterval = 1.0f;
+    public static Vector3 c_boomBoomAwakenRange { get { return new Vector3(10.0f, 10.0f, 10.0f); } }
 
 
 }
