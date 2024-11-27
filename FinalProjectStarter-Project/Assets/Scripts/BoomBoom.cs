@@ -1,12 +1,12 @@
 /*
  
- Boom Boom is the boss fight of the fortress. Boom Boom starts it a dormant state, when Mario approaches them, they awaken. 
-Now awake, Boom Boom moves erratically side to side at a consistent speed, changing direction at a moments notice. 
-Boom Boom can even jump, though they don't do that very ofter. Boom Boom's jump is preceded by a brief pause, then they will jump in either direction. 
-If Mario lands on Boom Boom, then they are stunned. After a brief period, Boom Boom starts moving again. After Mario lands on him twice, Boom Boom will move even faster. 
+DONE - Boom Boom is the boss fight of the fortress. Boom Boom starts it a dormant state, when Mario approaches them, they awaken. 
+DONE - Now awake, Boom Boom moves erratically side to side at a consistent speed, changing direction at a moments notice. 
+DONE - Boom Boom can even jump, though they don't do that very ofter. Boom Boom's jump is preceded by a brief pause, then they will jump in either direction. 
+DONE - If Mario lands on Boom Boom, then they are stunned. After a brief period, Boom Boom starts moving again. After Mario lands on him twice, Boom Boom will move even faster. 
 If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
 The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
-If side or bottom of Boom Boom collides with Mario, while Boom Boom is in its moving state (or jumping) then Mario is damaged.
+DONE - If side or bottom of Boom Boom collides with Mario, while Boom Boom is in its moving state (or jumping) then Mario is damaged.
  
  */
 
@@ -14,6 +14,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using static UnityEditor.FilePathAttribute;
 
 public enum eBoomBoomState : byte
 {
@@ -46,6 +48,9 @@ public class BoomBoom : Enemy
 
     protected Animator m_animator;
 
+    public List<Sprite> m_starEffectList;
+
+
     public eBoomBoomInitialDirection m_initialDirection = eBoomBoomInitialDirection.Unknown;
     private eBoomBoomState m_state = eBoomBoomState.Unknown;
 
@@ -54,9 +59,10 @@ public class BoomBoom : Enemy
     private float m_directionChangeInterval = 0.0f;
     private Int32 m_lives = 0;
     private Int32 m_nearDeathLives = 0;
-    private Vector3 m_awakenRange = Vector3.zero;
     private bool m_allowRandomDirection = true; //prevent the random direction from happening if the OnTriggerEnter2D is still clipping an object and not continue that direction.
     private float m_boomBoomJumpInterval = 0.0f;
+    private bool m_isGrounded = true;
+    private bool m_isAwaken = false;
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -68,9 +74,10 @@ public class BoomBoom : Enemy
         m_lives = EnemyConstants.c_boomBoomLives;
         m_directionChangeInterval= EnemyConstants.c_boomBoomDirectionChangeInterval;
         m_nearDeathLives = EnemyConstants.c_boomBoomNearDeathLives;
-        m_awakenRange = EnemyConstants.c_boomBoomAwakenRange;
         SetState(eBoomBoomState.Dormant);
         m_boomBoomJumpInterval = EnemyConstants.c_boomBoomJumpInterval;
+
+        m_starEffectList = new List<Sprite>();
     }
 
     // Update is called once per frame
@@ -87,25 +94,19 @@ public class BoomBoom : Enemy
 
             if (m_stunnedDuration <= 0.0f)
             {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
+                
                 SetState(eBoomBoomState.Dormant);
             }
         }
         if (m_state == eBoomBoomState.Dormant)
         {
-            if (checkAwakenRange())
+            if (IsAwake)//TODO change to trigger box enter
             {
-                m_awakenRange.x = 100.0f;//setting range to 100 vs creating a new bool
                 m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             }
-
-            
             if (m_stunnedDuration <= 0.0f)
             {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-
                 SetState((m_lives == m_nearDeathLives) ? eBoomBoomState.NearDeath : eBoomBoomState.Walking);
-
             }
         }
         if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
@@ -119,8 +120,6 @@ public class BoomBoom : Enemy
             }
             if (m_boomBoomJumpInterval <= 0.0f)
             {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-                m_boomBoomJumpInterval = EnemyConstants.c_boomBoomJumpInterval;
                 SetState(eBoomBoomState.Pause);
             }
             Vector2 location = rigidbody.position;
@@ -132,29 +131,31 @@ public class BoomBoom : Enemy
             m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             if (m_stunnedDuration <= 0.0f)
             {
-                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
-
                 SetState(eBoomBoomState.Jump);
-
             }
-        }
-        if (m_state == eBoomBoomState.Jump)
-        {
-            //rigidbody.AddForce(new Vector2(0.0f, 3.0f), ForceMode2D.Impulse);
-            c_boomBoomJumpForce
-
-
         }
         if (m_state == eBoomBoomState.Death)
         {
             m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
-
+            
             if (m_stunnedDuration <= 0.0f)
             {
-                Destroy(gameObject);
+                //TODO If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
+                //The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
+                
             }
         }
     }
+    public eBoomBoomState State
+    {
+        get { return m_state; }
+    }
+    public bool IsAwake
+    {
+        get { return m_isAwaken; }
+        set { m_isAwaken = value; }
+    }
+
     private void SetState(eBoomBoomState state)
     {
         if (m_state != state)
@@ -164,12 +165,13 @@ public class BoomBoom : Enemy
             UpdateAnimator();
             if (m_state == eBoomBoomState.Walking)
             {
-                
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
                 RandomizeDirection();
                
             }
             else if (m_state == eBoomBoomState.NearDeath)
             {
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
                 RandomizeDirection();
                 
             }
@@ -179,11 +181,21 @@ public class BoomBoom : Enemy
             }
             else if (m_state == eBoomBoomState.Dormant)
             {
-                
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
             }
             else if (m_state == eBoomBoomState.Jump)
             {
-                
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
+                if (m_isGrounded)
+                {
+                    int index = UnityEngine.Random.Range(0, 10) % 2;
+                    float[] direction = { -1.0f, 1.0f };
+
+                    Vector2 jumpDirection = new Vector2(direction[index], 1f);
+
+                    rigidbody.AddForce(jumpDirection * EnemyConstants.c_boomBoomJumpForce);
+                    m_isGrounded = false;
+                }
             }
             else if (m_state == eBoomBoomState.Death)
             {
@@ -191,15 +203,14 @@ public class BoomBoom : Enemy
             }
             else if (m_state == eBoomBoomState.Pause)
             {
+                m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
+                m_boomBoomJumpInterval = EnemyConstants.c_boomBoomJumpInterval;
                 m_velocity.x = 0.0f;
             }
             
         }  
     }
-    public eBoomBoomState State
-    {
-        get { return m_state; }
-    }
+    
 
     private void ApplyInitialVelocity()
     {
@@ -233,8 +244,9 @@ public class BoomBoom : Enemy
         if (m_state == eBoomBoomState.Jump)
         {
             if (collision.gameObject.CompareTag("World"))
-            { 
-            SetState(eBoomBoomState.Walking);
+            {
+                m_isGrounded = true;
+                SetState((m_lives == m_nearDeathLives) ? eBoomBoomState.NearDeath : eBoomBoomState.Walking);
             }
         }
         if (collision.gameObject.CompareTag("Mario"))
@@ -251,8 +263,7 @@ public class BoomBoom : Enemy
                 {
                     mario.HandleDamage();
                 }
-
-                if (m_state == eBoomBoomState.Walking || m_state == eBoomBoomState.NearDeath)
+                else if (m_state != eBoomBoomState.Stunned || m_state != eBoomBoomState.Death)
                 {
                    
                     if (normal.x <= -0.8f || normal.x >= 0.8f || normal.y >= 0.7f)
@@ -360,10 +371,6 @@ public class BoomBoom : Enemy
             m_backTrigger.offset = new Vector2(0.6f, 0.7f);
         }
     }
-    bool checkAwakenRange()
-    {
-        return m_awakenRange.x >= Vector3.Distance(Game.Instance.MarioGameObject.transform.position, transform.position); 
-    }
     private void UpdateAnimator()
     {
         
@@ -383,5 +390,9 @@ public class BoomBoom : Enemy
         {
             animator.Play("BoomBoomDeath");
         }
+    }
+    public void OnDeathAnimationFinished()
+    {
+        Destroy(gameObject);
     }
 }

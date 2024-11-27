@@ -12,6 +12,7 @@ TagManager:
   - BreakableBlock
   - Door
   - Boundry
+  - BoomBoomAwakenBoundry
   layers:
   - Default
   - TransparentFX
