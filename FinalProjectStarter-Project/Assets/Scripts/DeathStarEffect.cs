@@ -27,8 +27,8 @@ public class DeathStarEffect : MonoBehaviour
         Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
         rigidbody.gravityScale = 0.0f;
 
-        //rigidbody.AddForce(direction, ForceMode2D.Force);
-        rigidbody.AddRelativeForce(direction, ForceMode2D.Force);
+        rigidbody.AddForce(direction * 1000, ForceMode2D.Force);
+        //rigidbody.AddRelativeForce(direction, ForceMode2D.Force);
         //rigidbody.AddTorque(Mathf.PI * 2.0f, ForceMode2D.Impulse);
 
         //Vector2 location = rigidbody.position;

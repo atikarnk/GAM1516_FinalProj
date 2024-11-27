@@ -198,16 +198,25 @@ public class BoomBoom : Enemy
             else if (m_state == eBoomBoomState.Death)
             {
                 Vector2 location = transform.position;
-                for (int i = 0; i < EnemyConstants.c_boomBoomDeathStarEffectNumb; i++)
-                {
-                    int index = UnityEngine.Random.Range(0, 10) % 2;
-                    float[] direction = { -1.0f, 1.0f };
-
-                    //Vector2 jumpDirection = new Vector2(direction[index], direction[index]);
-                    Vector2 jumpDirection = new Vector2((direction[index] / EnemyConstants.c_boomBoomDeathStarEffectNumb) * i, (direction[index] / EnemyConstants.c_boomBoomDeathStarEffectNumb) * i);
-                    //Game.Instance.SpawnDeathStarEffect(location, new Vector2(-((360/ EnemyConstants.c_boomBoomDeathStarEffectNumb)*i), ((360 / EnemyConstants.c_boomBoomDeathStarEffectNumb)*i)));
-                    Game.Instance.SpawnDeathStarEffect(location, jumpDirection* EnemyConstants.c_boomBoomJumpForce);
-                }
+               
+                //TODO don't be lazy make a loop
+                Vector2 jumpDirection = new Vector2(0.5f, 0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(-0.5f, -0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(-0.5f, 0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(0.5f, -0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(0.5f, 0.0f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(-0.5f, -0.0f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(-0.0f, 0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                jumpDirection = new Vector2(0.0f, -0.5f);
+                Game.Instance.SpawnDeathStarEffect(location, jumpDirection);
+                
             }
             else if (m_state == eBoomBoomState.Pause)
             {
