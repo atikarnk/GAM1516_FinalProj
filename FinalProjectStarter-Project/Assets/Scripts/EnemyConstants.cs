@@ -36,4 +36,15 @@ public static class EnemyConstants
     public const float ThwompAnimationDuration = 3.0f;
     public const float ThwompHoldTimer = 1.0f;
     public const float ThwompFallingSpeed = 17.0f;
+
+    //BoomBoom Const
+    public const float c_boomBoomSpeed = 3.0f;
+    public const float c_boomBoomNearDeathSpeed = 6.0f;
+    public const float c_boomBoomStunnedDuration = 1.0f;
+    public const Int16 c_boomBoomLives = 1;
+    public const Int16 c_boomBoomNearDeathLives = 1;
+    public const float c_boomBoomDirectionChangeInterval = 1.0f;
+    public static float c_boomBoomJumpInterval = 10.0f;
+    public static float c_boomBoomJumpForce = 500.0f;
+    public static Int16 c_boomBoomDeathStarEffectNumb = 8;
 }
