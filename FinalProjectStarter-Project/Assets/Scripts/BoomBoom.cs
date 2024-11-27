@@ -150,7 +150,7 @@ public class BoomBoom : Enemy
     public bool IsAwake
     {
         get { return m_isAwaken; }
-        set { m_isAwaken = value; SetState(eBoomBoomState.Death); }//TODO remove SetState(eBoomBoomState.Death)
+        set { m_isAwaken = value; }
     }
 
     private void SetState(eBoomBoomState state)
