@@ -48,17 +48,14 @@ public class BoomBoom : Enemy
 
     protected Animator m_animator;
 
-    public List<Sprite> m_starEffectList;
-
-
     public eBoomBoomInitialDirection m_initialDirection = eBoomBoomInitialDirection.Unknown;
     private eBoomBoomState m_state = eBoomBoomState.Unknown;
 
     private float m_stunnedDuration = 0.0f; //using same timer for stunned and dormant
     private Vector2 m_velocity = Vector2.zero;
     private float m_directionChangeInterval = 0.0f;
-    private Int32 m_lives = 0;
-    private Int32 m_nearDeathLives = 0;
+    private Int16 m_lives = 0;
+    private Int16 m_nearDeathLives = 0;
     private bool m_allowRandomDirection = true; //prevent the random direction from happening if the OnTriggerEnter2D is still clipping an object and not continue that direction.
     private float m_boomBoomJumpInterval = 0.0f;
     private bool m_isGrounded = true;
@@ -77,7 +74,7 @@ public class BoomBoom : Enemy
         SetState(eBoomBoomState.Dormant);
         m_boomBoomJumpInterval = EnemyConstants.c_boomBoomJumpInterval;
 
-        m_starEffectList = new List<Sprite>();
+        
     }
 
     // Update is called once per frame
@@ -136,14 +133,14 @@ public class BoomBoom : Enemy
         }
         if (m_state == eBoomBoomState.Death)
         {
-            m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
+            //m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             
-            if (m_stunnedDuration <= 0.0f)
-            {
-                //TODO If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
-                //The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
+            //if (m_stunnedDuration <= 0.0f)
+            //{
+            //    //TODO If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
+            //    //The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
                 
-            }
+            //}
         }
     }
     public eBoomBoomState State
@@ -153,7 +150,7 @@ public class BoomBoom : Enemy
     public bool IsAwake
     {
         get { return m_isAwaken; }
-        set { m_isAwaken = value; }
+        set { m_isAwaken = value; SetState(eBoomBoomState.Death); }//TODO remove SetState(eBoomBoomState.Death)
     }
 
     private void SetState(eBoomBoomState state)
@@ -194,12 +191,23 @@ public class BoomBoom : Enemy
                     Vector2 jumpDirection = new Vector2(direction[index], 1f);
 
                     rigidbody.AddForce(jumpDirection * EnemyConstants.c_boomBoomJumpForce);
+                    //rigidbody.AddTorque(Mathf.PI * 2.0f, ForceMode2D.Impulse); //TODO test
                     m_isGrounded = false;
                 }
             }
             else if (m_state == eBoomBoomState.Death)
             {
-               
+                Vector2 location = transform.position;
+                for (int i = 0; i < EnemyConstants.c_boomBoomDeathStarEffectNumb; i++)
+                {
+                    int index = UnityEngine.Random.Range(0, 10) % 2;
+                    float[] direction = { -1.0f, 1.0f };
+
+                    //Vector2 jumpDirection = new Vector2(direction[index], direction[index]);
+                    Vector2 jumpDirection = new Vector2((direction[index] / EnemyConstants.c_boomBoomDeathStarEffectNumb) * i, (direction[index] / EnemyConstants.c_boomBoomDeathStarEffectNumb) * i);
+                    //Game.Instance.SpawnDeathStarEffect(location, new Vector2(-((360/ EnemyConstants.c_boomBoomDeathStarEffectNumb)*i), ((360 / EnemyConstants.c_boomBoomDeathStarEffectNumb)*i)));
+                    Game.Instance.SpawnDeathStarEffect(location, jumpDirection* EnemyConstants.c_boomBoomJumpForce);
+                }
             }
             else if (m_state == eBoomBoomState.Pause)
             {

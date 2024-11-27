@@ -27,6 +27,7 @@ public class Game : MonoBehaviour
     public GameObject coinPickupPrefab;
     public GameObject breakableBlockPrefab;
     public GameObject breakableBlockBitPrefab;
+    public GameObject deathStarEffectPrefab;
     public GameObject fireballPrefab;
     public GameObject changeAnimationPrefab;
 
@@ -328,6 +329,16 @@ public class Game : MonoBehaviour
             GameObject breakableBlockBitObject = Instantiate(breakableBlockBitPrefab, new Vector3(location.x, location.y, -1.0f), Quaternion.identity);
             BreakableBlockBit breakableBlockBit = breakableBlockBitObject.GetComponent<BreakableBlockBit>();
             breakableBlockBit.Spawn(type, impulse);
+        }
+    }
+
+    public void SpawnDeathStarEffect(Vector2 location, Vector2 direction)
+    {
+        if (deathStarEffectPrefab != null)
+        {
+            GameObject deathStarEffectObj = Instantiate(deathStarEffectPrefab, new Vector3(location.x, location.y, -1.0f), Quaternion.identity);
+            DeathStarEffect deathStarEffect = deathStarEffectObj.GetComponent<DeathStarEffect>();
+            deathStarEffect.Spawn(direction);
         }
     }
 
