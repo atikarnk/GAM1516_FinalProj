@@ -44,7 +44,7 @@ public static class EnemyConstants
     public const int c_boomBoomLives = 3;
     public const int c_boomBoomNearDeathLives = 1;
     public const float c_boomBoomDirectionChangeInterval = 1.0f;
-    public static float c_boomBoomJumpInterval = 10.0f;
+    public static float c_boomBoomJumpInterval = 1.0f;
     public static float c_boomBoomJumpForce = 500.0f;
     public static int c_boomBoomDeathStarEffectNumb = 8;
 }
