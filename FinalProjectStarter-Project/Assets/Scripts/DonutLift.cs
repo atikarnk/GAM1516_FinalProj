@@ -102,7 +102,7 @@ public class DonutLift : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Mario"))
         {
-            if (collision.contacts.Length > 0 && collision.contacts[0].normal.y <= -0.8f)
+            if (collision.contacts.Length > 0 && collision.contacts[0].normal.y <= -0.8f && m_state != eDonutLiftState.Falling)
             {
                 SetState(eDonutLiftState.SteppedOn);
             }
