@@ -59,7 +59,7 @@ public class Thwomp : Enemy
             MarioCamera camera = Game.Instance.marioCamera;
             camera.CheckShaking = true;
 
-            holdTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
+            holdTimer -= Time.deltaTime;
             if (holdTimer <= 0.0f)
             {
                 camera.CheckShaking = false;

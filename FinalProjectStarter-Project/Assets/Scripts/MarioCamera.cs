@@ -50,16 +50,7 @@ public class MarioCamera : MonoBehaviour
 
             if (isShaking)
             {
-                if (shakeTimer >= 0.0f)
-                    shakeTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
-                if (shakeTimer < 0.0f)
-                {
-                    isShaking = false;
-                    shakeTimer = GameConstants.CameraShakeMaxTime;
-                }
-
-                if (shakeTimer > 0.0f)
-                    Shake(marioLocation);
+                Shake(marioLocation);
             }
         }
     }
@@ -86,8 +77,8 @@ public class MarioCamera : MonoBehaviour
     {
         if (isShaking)
         {
-            float x = UnityEngine.Random.Range(-0.5f, 0.5f);
-            float y = UnityEngine.Random.Range(-0.5f, 0.5f);
+            float x = UnityEngine.Random.Range(-0.25f, 0.25f);
+            float y = UnityEngine.Random.Range(-0.25f, 0.25f);
 
             SetCameraLocation(new Vector2(location.x + x, location.y));
         }

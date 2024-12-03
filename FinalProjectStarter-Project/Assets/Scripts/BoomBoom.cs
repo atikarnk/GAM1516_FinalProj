@@ -13,6 +13,7 @@ DONE - If side or bottom of Boom Boom collides with Mario, while Boom Boom is in
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.FilePathAttribute;
@@ -24,6 +25,7 @@ public enum eBoomBoomState : byte
     Stunned,
     Dormant,
     Jump,
+    OnGround,
     NearDeath,
     Death,
     Pause,
@@ -58,6 +60,7 @@ public class BoomBoom : Enemy
     private Int16 m_nearDeathLives = 0;
     private bool m_allowRandomDirection = true; //prevent the random direction from happening if the OnTriggerEnter2D is still clipping an object and not continue that direction.
     private float m_boomBoomJumpInterval = 0.0f;
+    private float m_boomBoomHoldTimer = 0.0f;
     private bool m_isGrounded = true;
     private bool m_isAwaken = false;
     // Start is called before the first frame update
@@ -131,6 +134,20 @@ public class BoomBoom : Enemy
                 SetState(eBoomBoomState.Jump);
             }
         }
+        if (m_state == eBoomBoomState.OnGround)
+        {
+            MarioCamera camera = Game.Instance.marioCamera;
+            camera.CheckShaking = true;
+
+            m_boomBoomHoldTimer -= Time.deltaTime;
+            if (m_boomBoomHoldTimer <= 0.0f)
+            {
+                camera.CheckShaking = false;
+                m_boomBoomHoldTimer = 0.0f;
+                SetState((m_lives == m_nearDeathLives) ? eBoomBoomState.NearDeath : eBoomBoomState.Walking);
+                m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
+            }
+        }
         if (m_state == eBoomBoomState.Death)
         {
             //m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
@@ -194,6 +211,10 @@ public class BoomBoom : Enemy
                     m_isGrounded = false;
                     
                 }
+            }
+            else if (m_state == eBoomBoomState.OnGround)
+            {
+                m_boomBoomHoldTimer = EnemyConstants.c_boomBoomHoldTimer;
             }
             else if (m_state == eBoomBoomState.Death)
             {
@@ -263,10 +284,11 @@ public class BoomBoom : Enemy
             if (collision.gameObject.CompareTag("World"))
             {
                 m_isGrounded = true;
-                SetState((m_lives == m_nearDeathLives) ? eBoomBoomState.NearDeath : eBoomBoomState.Walking);
+                SetState(eBoomBoomState.OnGround);
             }
         }
-        if (collision.gameObject.CompareTag("Mario"))
+
+            if (collision.gameObject.CompareTag("Mario"))
         {
             // Get the Mario component from the GameObject
             Mario mario = collision.gameObject.GetComponent<Mario>();
@@ -296,7 +318,6 @@ public class BoomBoom : Enemy
 
                         if (m_lives >= m_nearDeathLives)
                         {
-
                             SetState(eBoomBoomState.Stunned);
                         }
                         else

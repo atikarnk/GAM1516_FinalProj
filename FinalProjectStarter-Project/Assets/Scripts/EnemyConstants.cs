@@ -47,4 +47,5 @@ public static class EnemyConstants
     public static float c_boomBoomJumpInterval = 1.0f;
     public static float c_boomBoomJumpForce = 500.0f;
     public static int c_boomBoomDeathStarEffectNumb = 8;
+    public const float c_boomBoomHoldTimer = 1.0f;
 }
