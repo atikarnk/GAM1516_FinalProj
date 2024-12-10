@@ -100,7 +100,7 @@ public class BoomBoom : Enemy
         }
         if (m_state == eBoomBoomState.Dormant)
         {
-            if (IsAwake)//TODO change to trigger box enter
+            if (IsAwake)
             {
                 m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             }
@@ -167,7 +167,7 @@ public class BoomBoom : Enemy
     public bool IsAwake
     {
         get { return m_isAwaken; }
-        set { m_isAwaken = value; }
+        set { m_isAwaken = value; SetState(eBoomBoomState.Death); }
     }
 
     private void SetState(eBoomBoomState state)
