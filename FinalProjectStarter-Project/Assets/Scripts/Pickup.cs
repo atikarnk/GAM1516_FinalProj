@@ -7,7 +7,8 @@ public enum EPickupType : byte
     Unknown,
     Mushroom,
     Coin,
-    OneUp
+    OneUp,
+    QuestionCircle
 }
 
 public enum EPickupState : byte

@@ -10,4 +10,7 @@ public static class PickupConstants
 
     public const float ItemBoxCoinGravityScale = 4.0f;
     public const float ItemBoxCoinImpulseY = 28.0f;
+
+    public const float QuestionCircleGravityScale = 2.0f;
+    public const float QuestionCircleImpulseY = 15.0f;
 }
