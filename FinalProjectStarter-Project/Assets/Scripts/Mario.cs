@@ -260,6 +260,14 @@ public class Mario : MonoBehaviour
 
             ApplyTransformChange(EMarioForm.Small);
         }
+        else if (marioState.Form == EMarioForm.FlowerPower)
+        {
+            damagedTimer = MarioConstants.InvincibleVisibilityDuration;
+            marioState.InvincibilityTimer = MarioConstants.InvincibleTime;
+            gameObject.layer = LayerMask.NameToLayer("MarioInvincible");
+
+            ApplyTransformChange(EMarioForm.Super);
+        }
     }
 
     public void ApplyStateChange(EMarioState newState)
@@ -278,7 +286,7 @@ public class Mario : MonoBehaviour
         }
 
         // Handle the duck resize and reposition when mario is big
-        if (marioState.Form == EMarioForm.Super)
+        if (marioState.Form == EMarioForm.Super || marioState.Form == EMarioForm.FlowerPower)
         {
             if (newState == EMarioState.Ducking)
             {
@@ -325,12 +333,37 @@ public class Mario : MonoBehaviour
             }
             else if (oldForm == EMarioForm.Super && newForm == EMarioForm.Small)
             {
+                Game.Instance.PauseActors();
                 transformOrDamageAnimationIsRunning = true;
                 previousAnimatorSpeed = animator.speed;
                 animator.speed = 1.0f;
                 animator.Play("MarioDamage");
             }
+            else if (oldForm == EMarioForm.FlowerPower && newForm == EMarioForm.Super)
+            {
+                Game.Instance.PauseActors();
+                // Deactivate the gameObject
+               // gameObject.SetActive(false);
+                transformOrDamageAnimationIsRunning = true;
+                previousAnimatorSpeed = animator.speed;
+                animator.speed = 1.0f;
+                //Game.Instance.SpawnChangeAnimation(transform.position);
+                animator.Play("MarioDamageFlowerPower");
+            }
+            else if (newForm == EMarioForm.FlowerPower)
+            {
+                Game.Instance.PauseActors();
+                // Deactivate the gameObject
+                //gameObject.SetActive(false);
+                transformOrDamageAnimationIsRunning = true;
+                previousAnimatorSpeed = animator.speed;
+                animator.speed = 1.0f;
+                //Game.Instance.SpawnChangeAnimation(transform.position);
+                animator.Play("MarioTransformFlowerPower");
+
+            }
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -369,6 +402,10 @@ public class Mario : MonoBehaviour
             {
                 Game.Instance.SetState(EGameState.GameWon);
             }
+            else if (pickupType == EPickupType.FlowerPower)
+            {
+                ApplyTransformChange(EMarioForm.FlowerPower);
+            }
             // Destroy the pickup gameObject
             Destroy(collider.gameObject);
         }
@@ -392,7 +429,10 @@ public class Mario : MonoBehaviour
         if (marioState.State != EMarioState.Dead)
         {
             if (marioState.Form == EMarioForm.Super)
-                ApplyTransformChange(EMarioForm.Small, true);
+                ApplyTransformChange(EMarioForm.Small);
+
+            if (marioState.Form == EMarioForm.FlowerPower)
+                ApplyTransformChange(EMarioForm.Super);
 
             // Set the state change to Dead
             ApplyStateChange(EMarioState.Dead);
@@ -537,6 +577,57 @@ public class Mario : MonoBehaviour
                 animator.Play("MarioSuperDuck");
             }
         }
+        else if (marioState.Form == EMarioForm.FlowerPower)
+        {
+            if (marioState.State == EMarioState.Idle)
+            {
+                animator.Play("MarioFlowerPowerIdle");
+            }
+            else if (marioState.State == EMarioState.Walking)
+            {
+                if (marioMovement.IsSkidding() == false)
+                {
+                    if (marioState.IsRunning && marioState.RunningMeter == MarioConstants.MaxRunningMeter)
+                    {
+                        animator.Play("MarioFlowerPowerRun");
+                    }
+                    else
+                    {
+                        animator.Play("MarioFlowerPowerWalk");
+                    }
+                }
+                else
+                {
+                    animator.Play("MarioFlowerPowerTurn");
+                }
+            }
+            else if (marioState.State == EMarioState.Jumping)
+            {
+                if (marioState.IsRunning && marioState.RunningMeter == MarioConstants.MaxRunningMeter)
+                {
+                    animator.Play("MarioFlowerPowerRunJump");
+                }
+                else
+                {
+                    animator.Play("MarioFlowerPowerJump");
+                }
+            }
+            else if (marioState.State == EMarioState.Falling)
+            {
+                if (marioState.IsRunning && marioState.RunningMeter == MarioConstants.MaxRunningMeter)
+                {
+                    animator.Play("MarioFlowerPowerRunJump");
+                }
+                else
+                {
+                    animator.Play("MarioFlowerPowerJumpApex");
+                }
+            }
+            else if (marioState.State == EMarioState.Ducking)
+            {
+                animator.Play("MarioFlowerPowerDuck");
+            }
+        }
     }
 
     private void OnTransformAnimationFinished()
@@ -556,6 +647,8 @@ public class Mario : MonoBehaviour
 
     private void OnDamageAnimationFinished()
     {
+        Game.Instance.UnpauseActors();
+
         transformOrDamageAnimationIsRunning = false;
         animator.speed = previousAnimatorSpeed;
         previousAnimatorSpeed = 1.0f;
@@ -563,7 +656,10 @@ public class Mario : MonoBehaviour
         UpdateAnimator();
 
         // Update the collider's size and offset
-        collider.offset = new Vector2(-0.03f, 0.487f);
-        collider.size = new Vector2(0.765f, 0.93f);
+        if (marioState.Form == EMarioForm.Small)
+        {
+            collider.offset = new Vector2(-0.03f, 0.487f);
+            collider.size = new Vector2(0.765f, 0.93f);
+        }
     }
 }

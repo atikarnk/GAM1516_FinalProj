@@ -23,6 +23,7 @@ public class Game : MonoBehaviour
     public GameObject marioGameObject;
     public GameObject deadMarioPrefab;
     public GameObject mushroomPickupPrefab;
+    public GameObject flowerPowerPickupPrefab;
     public GameObject itemBoxPickupPrefab;
     public GameObject coinSwitchPrefab;
     public GameObject coinPickupPrefab;
@@ -302,6 +303,15 @@ public class Game : MonoBehaviour
             GameObject mushroomObject = Instantiate(mushroomPickupPrefab, new Vector3(location.x, location.y, 1.0f), Quaternion.identity);
             MushroomPickup mushroomPickup = mushroomObject.GetComponent<MushroomPickup>();
             mushroomPickup.Spawn();
+        }
+    }
+    public void SpawnFlowerPowerPickup(Vector2 location)
+    {
+        if (flowerPowerPickupPrefab != null)
+        {
+            GameObject flowerPowerObject = Instantiate(flowerPowerPickupPrefab, new Vector3(location.x, location.y, 1.0f), Quaternion.identity);
+            FlowerPower flowerPowerPickup = flowerPowerObject.GetComponent<FlowerPower>();
+            flowerPowerPickup.Spawn();
         }
     }
 

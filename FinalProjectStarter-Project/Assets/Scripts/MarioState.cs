@@ -15,7 +15,8 @@ public enum EMarioState : byte
 public enum EMarioForm : byte
 {
     Small,
-    Super
+    Super,
+    FlowerPower
 }
 
 public enum EMarioDirection : byte
