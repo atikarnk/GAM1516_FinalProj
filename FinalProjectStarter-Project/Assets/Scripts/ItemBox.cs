@@ -19,9 +19,10 @@ public enum EItemBoxContents : byte
     Coin5,
     Coin10,
     CoinSwitch,
-    OneUp
-              
-        // TODO: Add additional ItemBox contents here
+    OneUp,
+    FlowerPower
+
+    // TODO: Add additional ItemBox contents here
 }
 
 public class ItemBox : MonoBehaviour
@@ -163,6 +164,10 @@ public class ItemBox : MonoBehaviour
             else if (contents == EItemBoxContents.OneUp)
             {
                 Game.Instance.SpawnOneUpPickup(location);
+            }
+            else if (contents == EItemBoxContents.FlowerPower)
+            {
+                Game.Instance.SpawnFlowerPowerPickup(location);
             }
         }
     }
