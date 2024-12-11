@@ -11,9 +11,11 @@ public class HUD : MonoBehaviour
     public TMPro.TMP_Text timerText;
     public Image[] arrowImages;
     public Image gameOverImage;
+    public Image gameWonImage;
     public Image blackOverlay;
 
     private float gameOverAlpha = 0.0f;
+    private float gameWonAlpha = 0.0f;
     private float flashTimer = 0.1f;
     private bool flashOn = true;
 
@@ -21,6 +23,7 @@ public class HUD : MonoBehaviour
     void Start()
     {
         gameOverImage.color = new Color(1.0f, 1.0f, 1.0f, gameOverAlpha);
+        gameWonImage.color = new Color(1.0f, 1.0f, 1.0f, gameWonAlpha);
         blackOverlay.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
 
     }
@@ -66,6 +69,14 @@ public class HUD : MonoBehaviour
             {
                 gameOverAlpha = 1.0f;
                 gameOverImage.color = new Color(1.0f, 1.0f, 1.0f, gameOverAlpha);
+            }
+        }
+        if (Game.Instance.IsGameWon)
+        {
+            if (gameWonAlpha == 0.0f)
+            {
+                gameWonAlpha = 1.0f;
+                gameWonImage.color = new Color(1.0f, 1.0f, 1.0f, gameWonAlpha);
             }
         }
 

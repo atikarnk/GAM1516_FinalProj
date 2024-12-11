@@ -10,7 +10,8 @@ public enum EGameState : byte
     Gameplay,
     FadeIn,
     FadeHold,
-    FadeOut
+    FadeOut,
+    GameWon
 };
 
 public class Game : MonoBehaviour
@@ -31,7 +32,7 @@ public class Game : MonoBehaviour
     public GameObject fireballPrefab;
     public GameObject changeAnimationPrefab;
     public GameObject oneUpPickupPrefab;
-
+    public GameObject questionCirclePrefab;
 
     private GameObject deadMario = null;
     private Vector2 marioSpawnLocation = Vector2.zero;
@@ -43,7 +44,7 @@ public class Game : MonoBehaviour
     private float coinSwitchDuration = 0.0f;
     private EGameState state = EGameState.Unknown;
     private bool isGameOver = false;
-
+    private bool isGameWon = false;
     public static Game Instance
     {
         get { return sInstance; }
@@ -88,7 +89,11 @@ public class Game : MonoBehaviour
     {
         get { return isGameOver; }
     }
-
+    public bool IsGameWon
+    {
+        get { return isGameWon; }
+        set { isGameWon = value; }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -186,6 +191,21 @@ public class Game : MonoBehaviour
             {
                 fadeInOutTimer = 0.0f;
                 SetState(EGameState.Gameplay);
+            }
+        }
+        else if (state == EGameState.GameWon)
+        {
+            
+            fadeInOutTimer -= Time.deltaTime;
+
+            float elapsed = Mathf.Max(0.0f, GameConstants.BlackOverlayFadeInOutDuration - fadeInOutTimer);
+            float alpha = (elapsed / GameConstants.BlackOverlayFadeInOutDuration);
+            blackOverlayAlpha = alpha;
+
+            if (fadeInOutTimer <= 0.0f)
+            {
+                fadeInOutTimer = 0.0f;
+                isGameWon = true;
             }
         }
     }
@@ -351,6 +371,16 @@ public class Game : MonoBehaviour
             deathStarEffect.Spawn(direction);
         }
     }
+
+    public void SpawnQuestionCircle(Vector2 location)
+    {
+        if (deathStarEffectPrefab != null)
+        {
+            GameObject questionCircleObj = Instantiate(questionCirclePrefab, new Vector3(location.x, location.y, 0.0f), Quaternion.identity);
+            QuestionCircle qestionCircle = questionCircleObj.GetComponent<QuestionCircle>();
+            qestionCircle.Spawn();
+        }
+    }
     public void SpawnFireball(Vector2 location, Vector2 velocity)
     {
         if (fireballPrefab != null)
@@ -438,7 +468,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void SetState(EGameState newState)
+    public void SetState(EGameState newState)
     {
         if (state != newState)
         {
@@ -474,6 +504,11 @@ public class Game : MonoBehaviour
                 marioCamera.SetCameraLocation(marioSpawnLocation);
 
                 // Set the fade out timer
+                fadeInOutTimer = GameConstants.BlackOverlayFadeInOutDuration;
+            }
+            else if (state == EGameState.GameWon)
+            {
+                PauseActors();
                 fadeInOutTimer = GameConstants.BlackOverlayFadeInOutDuration;
             }
         }

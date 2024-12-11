@@ -365,7 +365,10 @@ public class Mario : MonoBehaviour
             {
                 marioState.Lives++;
             }
-
+            else if (pickupType == EPickupType.QuestionCircle)
+            {
+                Game.Instance.SetState(EGameState.GameWon);
+            }
             // Destroy the pickup gameObject
             Destroy(collider.gameObject);
         }

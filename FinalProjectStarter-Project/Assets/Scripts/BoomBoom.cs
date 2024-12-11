@@ -1,15 +1,3 @@
-/*
- 
-DONE - Boom Boom is the boss fight of the fortress. Boom Boom starts it a dormant state, when Mario approaches them, they awaken. 
-DONE - Now awake, Boom Boom moves erratically side to side at a consistent speed, changing direction at a moments notice. 
-DONE - Boom Boom can even jump, though they don't do that very ofter. Boom Boom's jump is preceded by a brief pause, then they will jump in either direction. 
-DONE - If Mario lands on Boom Boom, then they are stunned. After a brief period, Boom Boom starts moving again. After Mario lands on him twice, Boom Boom will move even faster. 
-If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
-The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
-DONE - If side or bottom of Boom Boom collides with Mario, while Boom Boom is in its moving state (or jumping) then Mario is damaged.
- 
- */
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -100,7 +88,7 @@ public class BoomBoom : Enemy
         }
         if (m_state == eBoomBoomState.Dormant)
         {
-            if (IsAwake)//TODO change to trigger box enter
+            if (IsAwake)
             {
                 m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             }
@@ -148,17 +136,7 @@ public class BoomBoom : Enemy
                 m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
             }
         }
-        if (m_state == eBoomBoomState.Death)
-        {
-            //m_stunnedDuration -= Time.deltaTime * Game.Instance.LocalTimeScale;
-            
-            //if (m_stunnedDuration <= 0.0f)
-            //{
-            //    //TODO If Mario lands on Boom Boom a third time, then he is dead, play the dead animation and after a short amount of time he 'explodes'. 
-            //    //The poof animation is played along with the eight stars animating outward in a circle. The question mark circle is also spawned with an upward impulse. 
-                
-            //}
-        }
+       
     }
     public eBoomBoomState State
     {
@@ -219,9 +197,10 @@ public class BoomBoom : Enemy
             else if (m_state == eBoomBoomState.Death)
             {
                 Vector2 location = transform.position;
-               
-                //TODO don't be lazy make a loop
-                Vector2 starDirection = new Vector2(0.5f, 0.5f);
+
+                Vector2 starDirection;
+
+                starDirection = new Vector2(0.5f, 0.5f);
                 Game.Instance.SpawnDeathStarEffect(location, starDirection);
                 starDirection = new Vector2(-0.5f, -0.5f);
                 Game.Instance.SpawnDeathStarEffect(location, starDirection);
@@ -237,7 +216,9 @@ public class BoomBoom : Enemy
                 Game.Instance.SpawnDeathStarEffect(location, starDirection);
                 starDirection = new Vector2(0.0f, -0.5f);
                 Game.Instance.SpawnDeathStarEffect(location, starDirection);
-                
+
+
+
             }
             else if (m_state == eBoomBoomState.Pause)
             {
@@ -428,6 +409,10 @@ public class BoomBoom : Enemy
         {
             animator.Play("BoomBoomDeath");
         }
+    }
+    public void SpawnQuestionCircle()
+    {
+        Game.Instance.SpawnQuestionCircle(transform.position);
     }
     public void OnDeathAnimationFinished()
     {
