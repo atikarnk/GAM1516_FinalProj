@@ -12,6 +12,8 @@ TagManager:
   - BreakableBlock
   - Door
   - Boundary
+  - BoomBoomAwakenBoundry
+  - Lava
   layers:
   - Default
   - TransparentFX

@@ -48,4 +48,9 @@ public static class EnemyConstants
     public static float c_boomBoomJumpForce = 500.0f;
     public static int c_boomBoomDeathStarEffectNumb = 8;
     public const float c_boomBoomHoldTimer = 1.0f;
+
+    //Podoboo
+    public const float c_podobooHiddenDurationMin = 2.0f;
+    public const float c_podobooHiddenDurationMax = 4.0f;
+    public const float c_podobooAnimationDuration = 0.75f;
 }
