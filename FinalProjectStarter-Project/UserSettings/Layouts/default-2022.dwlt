@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2560
     height: 1357
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Scene
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 77
+  controlID: 31
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -712,9 +712,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 45.17835, y: -2.277317, z: 0.38278356}
+    m_Target: {x: 366.4626, y: -2.4140244, z: 1.4025666}
     speed: 2
-    m_Value: {x: 45.17835, y: -2.277317, z: 0.38278356}
+    m_Value: {x: 366.4626, y: -2.4140244, z: 1.4025666}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1477,21 +1477,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: b0e9fdffaaf1fdffb4fafdffae02feff860afeffb013feff3a17fefffe21feff
+      m_ExpandedIDs: 8c08feff6410feff3c18fefffe21feff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: Boo
-        m_OriginalName: Boo
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -125218
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 12}
       m_SearchString: 
