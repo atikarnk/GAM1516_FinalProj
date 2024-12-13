@@ -91,3 +91,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_boomboom: {fileID: 6860800623616918827, guid: 74f13c02aec99c9479f01a5ec3c9e36a, type: 3}
+  m_trapWall: {fileID: 3738211273290479038, guid: b077ddf24c107964f9a932f282de6804, type: 3}
