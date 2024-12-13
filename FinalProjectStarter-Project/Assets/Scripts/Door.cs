@@ -6,7 +6,8 @@ public enum EDoorType : byte
 {
     Unknown,
     Exit,
-    Entrance
+    Entrance,
+    TwoWay
 }
 
 public class Door : MonoBehaviour
@@ -17,6 +18,10 @@ public class Door : MonoBehaviour
     public void DoorAction()
     {
         if (type == EDoorType.Exit)
+        {
+            Game.Instance.NextRoom(counterpart);
+        }
+        if (type == EDoorType.TwoWay)
         {
             Game.Instance.NextRoom(counterpart);
         }
