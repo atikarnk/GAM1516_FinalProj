@@ -20,5 +20,5 @@ public static class GameConstants
 
     // Camera constants
     public const float MaxCameraDelta = 32.0f;
-    public const float CameraShakeMaxTime = 0.2f;
+    public const float CameraShakeMaxTime = 0.5f;
 }
