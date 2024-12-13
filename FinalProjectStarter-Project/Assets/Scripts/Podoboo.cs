@@ -34,7 +34,8 @@ public class Podoboo : Enemy
     private Vector2 m_hidingLocation = Vector2.zero;
     private float m_hidingTimer = 0.0f;
     private float animationTimer = 0.0f;
-    private bool m_exitLava = false;
+    private Vector2 m_exitLavaLocation = Vector2.zero;
+    private Vector3 m_splashDirection = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
@@ -75,7 +76,7 @@ public class Podoboo : Enemy
         {
             animationTimer -= Time.deltaTime * Game.Instance.LocalTimeScale;
 
-            float pct = 0.2f - (animationTimer / EnemyConstants.c_podobooAnimationDuration);
+            float pct = 1.0f - (animationTimer / EnemyConstants.c_podobooAnimationDuration);
             float locationX = Mathf.Lerp(m_hidingLocation.x, m_apexLocation.x, pct);
             float locationY = Mathf.Lerp(m_hidingLocation.y, m_apexLocation.y, pct);
             transform.position = new Vector2(locationX, locationY);
@@ -95,7 +96,7 @@ public class Podoboo : Enemy
             float x = m_apexLocation.x - ((m_direction == ePodobooDirection.Left || m_direction == ePodobooDirection.Right)? 1 : 0 );
             float y = m_apexLocation.y - ((m_direction == ePodobooDirection.Up || m_direction == ePodobooDirection.Down) ? 1 : 0); ;
 
-            float pct = 0.2f - (animationTimer / EnemyConstants.c_podobooAnimationDuration);
+            float pct = 1.0f - (animationTimer / EnemyConstants.c_podobooAnimationDuration);
             float locationX = Mathf.Lerp(x, m_hidingLocation.x, pct);
             float locationY = Mathf.Lerp(y, m_hidingLocation.y, pct);
             transform.position = new Vector2(locationX, locationY);
@@ -124,19 +125,43 @@ public class Podoboo : Enemy
     {
         if (collision.gameObject.CompareTag("Lava"))
         {
-            Debug.Log("Splash Exit!");
-            //TODO Splash
-            m_exitLava = true;
+            //set splash zone once
+            if (m_exitLavaLocation==Vector2.zero)
+            { 
+                m_exitLavaLocation = collision.gameObject.transform.position;
+
+                if (m_direction == ePodobooDirection.Left)
+                {
+                    m_exitLavaLocation.x += 0.5f;
+                    m_exitLavaLocation.y += 0.5f;
+
+                    m_splashDirection = new Vector3(0, 0, 90 * (2 / (int)m_direction));
+                }
+                else if (m_direction == ePodobooDirection.Right)
+                {
+                    m_exitLavaLocation.x -= 0.5f;
+                    m_exitLavaLocation.y += 0.5f;
+                    m_splashDirection = new Vector3(0, 0, 90 * (2 / (int)m_direction));
+                }
+                else if (m_direction == ePodobooDirection.Up)
+                {
+                    m_splashDirection = new Vector3(0, 0, 180);
+                }
+                else if (m_direction == ePodobooDirection.Down)
+                {
+                    m_exitLavaLocation.y += 1.0f;
+                    m_splashDirection = new Vector3(0, 0, 0);
+                }
+            }
+
+            Game.Instance.SpawnSplash(m_exitLavaLocation, m_splashDirection);
         }
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Lava"))
-        {
-            if(m_exitLava)
-                Debug.Log("Splash Enter!");//TODO Splash
-            m_exitLava = false;
-        }
+        
+
     }
     void ChangeDirection(ePodobooDirection direction)
     {
