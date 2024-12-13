@@ -34,6 +34,7 @@ public class Game : MonoBehaviour
     public GameObject changeAnimationPrefab;
     public GameObject oneUpPickupPrefab;
     public GameObject questionCirclePrefab;
+    public GameObject splashPrefab;
 
     private GameObject deadMario = null;
     private Vector2 marioSpawnLocation = Vector2.zero;
@@ -391,6 +392,14 @@ public class Game : MonoBehaviour
             qestionCircle.Spawn();
         }
     }
+    public void SpawnSplash(Vector2 location,Vector3 direction)
+    {
+        if (splashPrefab != null)
+        {
+            Instantiate(splashPrefab, new Vector3(location.x, location.y, 0.0f), Quaternion.Euler(direction));
+        }
+    }
+
     public void SpawnFireball(Vector2 location, Vector2 velocity)
     {
         if (fireballPrefab != null)
