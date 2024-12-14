@@ -117,7 +117,7 @@ public class Podoboo : Enemy
 
             if (collision.contacts.Length > 0)
             {
-                mario.HandleDamage(true);
+                mario.HandleDamage();
             }
         }
     }

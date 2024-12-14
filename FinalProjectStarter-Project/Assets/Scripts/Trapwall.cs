@@ -7,16 +7,19 @@ public class Trapwall : MonoBehaviour
     public BoxCollider2D primaryCollider;
     public BoxCollider2D topTrigger;
 
+    private Vector2 m_startPosition = Vector2.zero;
     private new Rigidbody2D rigidbody;
     private Vector2 velocity = Vector2.zero;
     private Vector2 location = Vector2.zero;
     private bool isActive = false;
     private bool isGrounded = false;
     private float shakeTimer = 0.0f;
+
     // Start is called before the first frame update
     void Start()
     {
         primaryCollider.enabled = false;
+        m_startPosition = transform.position;
         rigidbody = GetComponent<Rigidbody2D>();
         //rigidbody.bodyType = RigidbodyType2D.Static;
         rigidbody.gravityScale = 0.0f;
@@ -41,7 +44,11 @@ public class Trapwall : MonoBehaviour
             {
                 camera.CheckShaking = false;
                 shakeTimer = 0.0f;
+                isGrounded = false;
+                isActive = false;
             }
+            
+
         }
         else if (isActive)
         {
@@ -53,9 +60,21 @@ public class Trapwall : MonoBehaviour
             //Vector2 vlocation = rigidbody.position;
             //vlocation += velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
             //rigidbody.position = vlocation;
+           
         }
     }
 
+    public void Reset()
+    {
+        primaryCollider.enabled = false;
+        isGrounded = false;
+        rigidbody.gravityScale = 0.0f;
+        
+        transform.position = m_startPosition;
+        isActive = false;
+        shakeTimer = GameConstants.CameraShakeMaxTime;
+        location = transform.position;
+    }
     public bool IsActive
     {
         get { return isActive; }
@@ -66,9 +85,8 @@ public class Trapwall : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("World"))
         {
-            if (collision.contacts.Length > 0)
+            if (collision.contacts.Length > 0&& isActive)
             {
-                //&& collision.contacts[0].normal.y >= 0.7f
                 isGrounded = true;
             }
         }
@@ -76,10 +94,12 @@ public class Trapwall : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        ContactFilter2D filter = new ContactFilter2D().NoFilter();
-        List<Collider2D> results = new List<Collider2D>();
-        collision.OverlapCollider(filter, results);
-
-        primaryCollider.enabled = true;
+        if (collision.gameObject.CompareTag("World"))
+        {
+            ContactFilter2D filter = new ContactFilter2D().NoFilter();
+            List<Collider2D> results = new List<Collider2D>();
+            collision.OverlapCollider(filter, results);
+            primaryCollider.enabled = true;
+        }
     }
 }

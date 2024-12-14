@@ -24,7 +24,7 @@ public class Lava : MonoBehaviour
             // Get the Mario component from the GameObject
             Mario mario = collision.gameObject.GetComponent<Mario>();
 
-            if (collision.contacts.Length > 0 && collision.contacts[0].normal.y <= -0.8f)
+            if (collision.contacts.Length > 0)
             {
                 mario.HandleDamage(true);
             }

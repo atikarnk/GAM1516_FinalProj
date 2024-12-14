@@ -15,4 +15,13 @@ public class BoomBoomAwakenBoundry : MonoBehaviour
             m_trapWall.IsActive = true;
         }
     }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Mario"))
+        {
+            m_boomboom.Reset();
+            m_trapWall.Reset();
+        }
+    }
+   
 }

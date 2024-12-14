@@ -21,6 +21,7 @@ public class Boo : Enemy
 
     private Vector2 velocity = Vector2.zero;
     private Vector2 m_movementDirection = Vector2.zero;
+    private bool m_isActive = false;
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -32,54 +33,62 @@ public class Boo : Enemy
         SetState(eBooState.Idel);
     }
 
-
+    public bool IsActive
+    {
+        get { return m_isActive; }
+        set { m_isActive = value; }
+    }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
-        if (m_state != eBooState.Unknown)
+        if (m_isActive)
         {
-            Vector2 marioLocation = Game.Instance.MarioGameObject.transform.position;
-            EMarioDirection direction = Game.Instance.MarioGameObject.GetComponent<MarioState>().Direction;
+            if (m_state != eBooState.Unknown)
+            {
+                Vector2 marioLocation = Game.Instance.MarioGameObject.transform.position;
+                EMarioDirection direction = Game.Instance.MarioGameObject.GetComponent<MarioState>().Direction;
 
-            if (direction == EMarioDirection.Right && marioLocation.x > transform.position.x)
-            {
-                SetState(eBooState.Chase);
-            }
-            if (direction == EMarioDirection.Right && marioLocation.x <= transform.position.x)
-            {
-                SetState(eBooState.Idel);
-            }
-            if (direction == EMarioDirection.Left && marioLocation.x >= transform.position.x)
-            {
-                SetState(eBooState.Idel);
-            }
-            if (direction == EMarioDirection.Left && marioLocation.x < transform.position.x)
-            {
-                SetState(eBooState.Chase);
-            }
+                if (direction == EMarioDirection.Right && marioLocation.x > transform.position.x)
+                {
+                    SetState(eBooState.Chase);
+                }
+                if (direction == EMarioDirection.Right && marioLocation.x <= transform.position.x)
+                {
+                    SetState(eBooState.Idel);
+                }
+                if (direction == EMarioDirection.Left && marioLocation.x >= transform.position.x)
+                {
+                    SetState(eBooState.Idel);
+                }
+                if (direction == EMarioDirection.Left && marioLocation.x < transform.position.x)
+                {
+                    SetState(eBooState.Chase);
+                }
 
-            if (m_state == eBooState.Chase)
-            {
-                if (transform.position.x > marioLocation.x)
+                if (m_state == eBooState.Chase)
                 {
-                    Vector3 scale = transform.localScale;
-                    scale.x = 1.0f;
-                    transform.localScale = scale;
+                    if (transform.position.x > marioLocation.x)
+                    {
+                        Vector3 scale = transform.localScale;
+                        scale.x = 1.0f;
+                        transform.localScale = scale;
+                    }
+                    else
+                    {
+                        Vector3 scale = transform.localScale;
+                        scale.x = -1.0f;
+                        transform.localScale = scale;
+                    }
+                    Vector2 location = transform.position;
+                    location += m_movementDirection * velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
+                    m_movementDirection = marioLocation - location;
+                    m_movementDirection.Normalize();
+                    transform.position = location;
                 }
-                else
-                {
-                    Vector3 scale = transform.localScale;
-                    scale.x = -1.0f;
-                    transform.localScale = scale;
-                }
-                Vector2 location = transform.position;
-                location += m_movementDirection * velocity * Time.deltaTime * Game.Instance.LocalTimeScale;
-                m_movementDirection = marioLocation - location;
-                m_movementDirection.Normalize();
-                transform.position = location;
             }
         }
+       
     }
     private void SetState(eBooState state)
     {
@@ -122,12 +131,12 @@ public class Boo : Enemy
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Boundary"))
-        {
-            SetState(eBooState.Unknown);
+    //private void OnTriggerExit2D(Collider2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("BooBoundary"))
+    //    {
+    //        SetState(eBooState.Unknown);
  
-        }
-    }
+    //    }
+    //}
 }

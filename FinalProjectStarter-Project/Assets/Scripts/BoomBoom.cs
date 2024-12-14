@@ -51,12 +51,15 @@ public class BoomBoom : Enemy
     private float m_boomBoomHoldTimer = 0.0f;
     private bool m_isGrounded = true;
     private bool m_isAwaken = false;
+
+    private Vector2 m_startLocation = Vector2.zero;
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         m_animator = GetComponent<Animator>();
         setBoxColliderDementions();
+        m_startLocation = transform.position;
         m_velocity.x = EnemyConstants.c_boomBoomSpeed;
         m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
         m_lives = EnemyConstants.c_boomBoomLives;
@@ -138,6 +141,13 @@ public class BoomBoom : Enemy
         }
        
     }
+    public void Reset()
+    {
+        transform.position = m_startLocation;
+        m_isAwaken = false;
+        m_lives = EnemyConstants.c_boomBoomLives;
+        SetState(eBoomBoomState.Dormant);
+    }
     public eBoomBoomState State
     {
         get { return m_state; }
@@ -173,6 +183,7 @@ public class BoomBoom : Enemy
             }
             else if (m_state == eBoomBoomState.Dormant)
             {
+                
                 m_stunnedDuration = EnemyConstants.c_boomBoomStunnedDuration;
             }
             else if (m_state == eBoomBoomState.Jump)
@@ -269,7 +280,7 @@ public class BoomBoom : Enemy
             }
         }
 
-            if (collision.gameObject.CompareTag("Mario"))
+        if (collision.gameObject.CompareTag("Mario"))
         {
             // Get the Mario component from the GameObject
             Mario mario = collision.gameObject.GetComponent<Mario>();
